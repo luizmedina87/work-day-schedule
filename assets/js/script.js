@@ -70,7 +70,7 @@ class TimeBlock {
    * @param {string} id ID name for associated HTML element.
    */
   constructor(dayjsObj, timeStart, id) {
-    this.name = `${timeStart}`;
+    this.name = this.makeName(timeStart);
     this.start = dayjsObj
       .hour(timeStart)
       .minute(0)
@@ -78,6 +78,13 @@ class TimeBlock {
       .millisecond(0);
     this.end = this.start.add(1, 'hour');
     this.id = id;
+  }
+
+  makeName(timeStart) {
+    var timeNumber = timeStart % 12 || 12;
+    var timePeriod = timeStart < 12 ? "AM" : "PM";
+    var timeText = timeNumber + timePeriod;
+    return timeText;
   }
 
   /**
