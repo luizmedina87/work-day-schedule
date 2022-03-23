@@ -31,15 +31,15 @@ class Schedule {
    * @param {*} dayjsObj dayjs object for the day.
    */
   constructor(dayjsObj) {
-    this.nineAM = new Timeblock(dayjsObj, 9, "nine-am", "");    
-    this.tenAM = new Timeblock(dayjsObj, 10, "ten-am", "");
-    this.elevenAM = new Timeblock(dayjsObj, 11, "eleven-am", "");
-    this.twelvePM = new Timeblock(dayjsObj, 12, "twelve-pm", "");
-    this.onePM = new Timeblock(dayjsObj, 13, "one-pm", "");
-    this.twoPM = new Timeblock(dayjsObj, 14, "two-pm", "");
-    this.threePM = new Timeblock(dayjsObj, 15, "three-pm", "");
-    this.fourPM = new Timeblock(dayjsObj, 16, "four-pm", "");
-    this.fivePM = new Timeblock(dayjsObj, 17, "five-pm", "");  
+    this.nineAM = new Timeblock(dayjsObj, 9, "nine-am");    
+    this.tenAM = new Timeblock(dayjsObj, 10, "ten-am");
+    this.elevenAM = new Timeblock(dayjsObj, 11, "eleven-am");
+    this.twelvePM = new Timeblock(dayjsObj, 12, "twelve-pm");
+    this.onePM = new Timeblock(dayjsObj, 13, "one-pm");
+    this.twoPM = new Timeblock(dayjsObj, 14, "two-pm");
+    this.threePM = new Timeblock(dayjsObj, 15, "three-pm");
+    this.fourPM = new Timeblock(dayjsObj, 16, "four-pm");
+    this.fivePM = new Timeblock(dayjsObj, 17, "five-pm");  
   }
 
   updateStatus() {
@@ -62,9 +62,8 @@ class Timeblock {
    * @param {dayjs} dayjsObj dayjs object of the respective date.
    * @param {number} timeStart Time timeblock starts.
    * @param {string} id ID name for associated HTML element.
-   * @param {string} description Description of event that will take place.
    */
-  constructor(dayjsObj, timeStart, id, description) {
+  constructor(dayjsObj, timeStart, id) {
     this.name = `${timeStart}`;
     this.start = dayjsObj
       .hour(timeStart)
@@ -73,7 +72,6 @@ class Timeblock {
       .millisecond(0);
     this.end = this.start.add(1, 'hour');
     this.id = id;
-    this.description = description;
   }
 
   status() {
@@ -111,7 +109,7 @@ class Timeblock {
     // description element
     $("<div>")
       .addClass("col-8 col-md-10 description")
-      .text(this.description)
+      // .text(this.description)
       .appendTo(`#${this.id}`);
 
     // button element
@@ -159,19 +157,19 @@ class Timeblock {
       
       $(this).replaceWith(textInput);
     });
+
+    // opens lock if description changes
+    $(`#${this.id}`).bind("input propertychange", function() {
+      $(`#${this.id} > button`)
+        .removeClass("bi-lock-fill")
+        .addClass("bi-unlock-fill");
+    });
     
     // saves and closes lock icon
     $(`#${this.id}`).on("click", "button", function() {
-      if ($(this).hasClass("bi-lock-fill")) {
-        $(this)
-        .removeClass("bi-lock-fill")
-        .addClass("bi-unlock-fill");
-      }
-      else {
         $(this)
         .removeClass("bi-unlock-fill")
         .addClass("bi-lock-fill");
-      }
     });
   }
 };
