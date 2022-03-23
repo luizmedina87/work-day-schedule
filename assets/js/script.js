@@ -41,11 +41,13 @@ class Schedule {
     this.fourPM = new Timeblock(dayjsObj, 16, "four-pm", "");
     this.fivePM = new Timeblock(dayjsObj, 17, "five-pm", "");  
   }
+
   updateStatus() {
     for (const timeblock in this) {
       this[timeblock].updateStatus();
     }
   }
+
   createSchedule() {
     for (const timeblock in this) {
       this[timeblock].createTimeblockEl();
@@ -59,20 +61,21 @@ class Timeblock {
    * Creates a 1h timeblock for the user to input descriptions of events.
    * @param {dayjs} dayjsObj dayjs object of the respective date.
    * @param {number} timeStart Time timeblock starts.
-   * @param {string} key Class name for associated HTML element.
+   * @param {string} id ID name for associated HTML element.
    * @param {string} description Description of event that will take place.
    */
-  constructor(dayjsObj, timeStart, key, description) {
+  constructor(dayjsObj, timeStart, id, description) {
+    this.name = `${timeStart}`;
     this.start = dayjsObj
       .hour(timeStart)
       .minute(0)
       .second(0)
       .millisecond(0);
     this.end = this.start.add(1, 'hour');
-    this.id = `#${key}`;
-    this.htmlEl = $(this.id);
+    this.id = id;
     this.description = description;
   }
+
   status() {
     var now = dayjs();
     if (now.isBefore(this.start)) {
@@ -85,12 +88,41 @@ class Timeblock {
       return "past";
     }
   }
+
   updateStatus() {
-    $(`${this.id} > .description`)
+    $(`#${this.id} > .description`)
       .removeClass("past future present")
       .addClass(this.status());
   }
-  
+
+  createTimeblockEl() {
+    // creating root element
+    $("<div>")
+      .attr("id", this.id)
+      .addClass("row time-block")
+      .appendTo("#time-block-container");
+
+    // hour element
+    $("<div>")
+      .addClass("col-2 col-md-1 hour")
+      .text(this.name)
+      .appendTo(`#${this.id}`);
+
+    // description element
+    $("<div>")
+      .addClass("col-8 col-md-10 description")
+      .text(this.description)
+      .appendTo(`#${this.id}`);
+
+    // button element
+    $("<button>")
+      .addClass("col-2 col-md-1 saveBtn")
+      .html("<i class='bi bi-lock-fill fa-lg'></i>")
+      .appendTo(`#${this.id}`);
+    
+    // update status
+    this.updateStatus();
+  }
 };
 
 
@@ -98,29 +130,33 @@ class Timeblock {
 $(document).ready(function() {
   var today = new Workday(dayjs());
   today.showDate();
-  today.schedule.updateStatus();
-});
+  today.schedule.createSchedule();
 
-$(".time-block").on("click", "div.description", function() {
-  console.log("click");
-  var currentText = $(this)
-    .text()
-    .trim();
+  $(".time-block").on("click", "div.description", function() {
+    console.log("click");
+    var currentText = $(this)
+      .text()
+      .trim();
+    
+    var currentClass = $(this).attr('class');
   
-  var currentClass = $(this).attr('class');
+    var textInput = $("<textarea>")
+      .addClass(currentClass)
+      .text(currentText);
+    $(this).replaceWith(textInput);
+  
+    textInput.trigger("focus");
+  });
+  
+  $(".time-block").on("blur", "textarea", function() {
+    console.log("blur")
+    $(this).trigger("focus");
+  });
 
-  var textInput = $("<textarea>")
-    .addClass(currentClass)
-    .text(currentText);
-  $(this).replaceWith(textInput);
 
-  textInput.trigger("focus");
 });
 
-$(".time-block").on("blur", "textarea", function() {
-  console.log("blur")
-  $(this).trigger("focus");
-});
+
 
 
 
