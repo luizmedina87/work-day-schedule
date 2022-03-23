@@ -166,15 +166,15 @@ class TimeBlock {
     // opens lock if description changes
     $(`#${this.id}`).bind("input propertychange", function() {
       $(`#${this.id} > button`)
-        .removeClass("bi-lock-fill")
-        .addClass("bi-unlock-fill");
+        .removeClass("saveBtn bi-lock-fill")
+        .addClass("unsavedBtn bi-unlock-fill");
     });
     
     // saves and closes lock icon
     $(`#${this.id}`).on("click", "button", this, function(event) {
         $(this)
-          .removeClass("bi-unlock-fill")
-          .addClass("bi-lock-fill");
+          .removeClass("unsavedBtn bi-unlock-fill")
+          .addClass("saveBtn bi-lock-fill");
         event.data.saveDescription();
     });
   }
