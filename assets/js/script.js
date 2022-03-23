@@ -28,37 +28,43 @@ class Workday {
 class Schedule {
   /**
    * Creates a schedule of timeblocks for the workday
-   * @param {*} dayjsObj dayjs object for the day.
+   * @param {dayjs} dayjsObj dayjs object for the day.
    */
   constructor(dayjsObj) {
-    this.nineAM = new Timeblock(dayjsObj, 9, "nine-am");    
-    this.tenAM = new Timeblock(dayjsObj, 10, "ten-am");
-    this.elevenAM = new Timeblock(dayjsObj, 11, "eleven-am");
-    this.twelvePM = new Timeblock(dayjsObj, 12, "twelve-pm");
-    this.onePM = new Timeblock(dayjsObj, 13, "one-pm");
-    this.twoPM = new Timeblock(dayjsObj, 14, "two-pm");
-    this.threePM = new Timeblock(dayjsObj, 15, "three-pm");
-    this.fourPM = new Timeblock(dayjsObj, 16, "four-pm");
-    this.fivePM = new Timeblock(dayjsObj, 17, "five-pm");
+    this.nineAM = new TimeBlock(dayjsObj, 9, "nine-am");    
+    this.tenAM = new TimeBlock(dayjsObj, 10, "ten-am");
+    this.elevenAM = new TimeBlock(dayjsObj, 11, "eleven-am");
+    this.twelvePM = new TimeBlock(dayjsObj, 12, "twelve-pm");
+    this.onePM = new TimeBlock(dayjsObj, 13, "one-pm");
+    this.twoPM = new TimeBlock(dayjsObj, 14, "two-pm");
+    this.threePM = new TimeBlock(dayjsObj, 15, "three-pm");
+    this.fourPM = new TimeBlock(dayjsObj, 16, "four-pm");
+    this.fivePM = new TimeBlock(dayjsObj, 17, "five-pm");
   }
-
+  
+  /**
+   * Updates current status of tasks
+   */
   updateStatus() {
     for (const timeblock in this) {
       this[timeblock].updateStatus();
     }
   }
-
+  
+  /**
+   * Creates all time block elements
+   */
   createSchedule() {
     for (const timeblock in this) {
-      this[timeblock].createTimeblockEl();
+      this[timeblock].createTimeBlockEl();
     }
   }
 };
 
 
-class Timeblock {
+class TimeBlock {
   /**
-   * Creates a 1h timeblock for the user to input descriptions of events.
+   * Creates a 1h time block for the user to input descriptions of events.
    * @param {dayjs} dayjsObj dayjs object of the respective date.
    * @param {number} timeStart Time timeblock starts.
    * @param {string} id ID name for associated HTML element.
@@ -74,6 +80,10 @@ class Timeblock {
     this.id = id;
   }
 
+  /**
+   * Checks the time block's position in relation to now
+   * @returns 
+   */
   status() {
     var now = dayjs();
     if (now.isBefore(this.start)) {
@@ -86,14 +96,20 @@ class Timeblock {
       return "past";
     }
   }
-
+  
+  /**
+   * Updates the tasks color
+   */
   updateStatus() {
     $(`#${this.id} > .description`)
       .removeClass("past future present")
       .addClass(this.status());
   }
-
-  createTimeblockEl() {
+  
+  /**
+   * Creates the HTML element
+   */
+  createTimeBlockEl() {
     // creating root element
     $("<div>")
       .attr("id", this.id)
@@ -117,7 +133,10 @@ class Timeblock {
     this.updateStatus();
     this.makeClickable();
   }
-
+  
+  /**
+   * Creates click functionality
+   */
   makeClickable() {
     // user can edit text
     $(`#${this.id}`).on("click", "div.description", function() {
@@ -159,21 +178,30 @@ class Timeblock {
         event.data.saveDescription();
     });
   }
-
+  
+  /**
+   * Saves the description to localstorage
+   */
   saveDescription() {
     var currentText = $(`#${this.id} > .description`).text()
     localStorage.setItem(this.id, JSON.stringify(currentText));
   }
-
+  
+  /**
+   * Gets the description from localsorage
+   * @returns {string} Time block's saved description
+   */
   loadDescription() {
     return JSON.parse(localStorage.getItem(this.id));
   }
 };
 
 
-// functions to execute after page loads
 $(document).ready(function() {
+  // creating website content
   var today = new Workday(dayjs());
   today.showDate();
   today.schedule.createSchedule();
+  // updates colors each minute
+  setInterval(today.schedule.updateStatus(), 60000)
 });
