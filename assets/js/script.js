@@ -116,12 +116,63 @@ class Timeblock {
 
     // button element
     $("<button>")
-      .addClass("col-2 col-md-1 saveBtn")
-      .html("<i class='bi bi-lock-fill fa-lg'></i>")
+      .addClass("col-2 col-md-1 saveBtn bi bi-lock-fill fa-lg")
       .appendTo(`#${this.id}`);
     
+    // creates jquery obj
+    this.jqueryObj = $(`#${this.id}`)
+
     // update status
     this.updateStatus();
+    this.makeClickable();
+  }
+
+  makeClickable() {
+    // user can edit text
+    $(`#${this.id}`).on("click", "div.description", function() {
+      var currentText = $(this)
+        .text()
+        .trim();
+      
+      var currentClass = $(this).attr('class');
+      
+      var textInput = $("<textarea>")
+        .addClass(currentClass)
+        .text(currentText);
+      
+      $(this).replaceWith(textInput);
+    
+      textInput.trigger("focus");
+    });
+
+    // convert editable area back to div
+    $(`#${this.id}`).on("blur", "textarea.description", function() {
+      var currentText = $(this)
+        .val()
+        .trim();
+      
+      var currentClass = $(this).attr('class');
+      
+      var textInput = $("<div>")
+        .addClass(currentClass)
+        .text(currentText);
+      
+      $(this).replaceWith(textInput);
+    });
+    
+    // saves and closes lock icon
+    $(`#${this.id}`).on("click", "button", function() {
+      if ($(this).hasClass("bi-lock-fill")) {
+        $(this)
+        .removeClass("bi-lock-fill")
+        .addClass("bi-unlock-fill");
+      }
+      else {
+        $(this)
+        .removeClass("bi-unlock-fill")
+        .addClass("bi-lock-fill");
+      }
+    });
   }
 };
 
@@ -131,42 +182,4 @@ $(document).ready(function() {
   var today = new Workday(dayjs());
   today.showDate();
   today.schedule.createSchedule();
-
-  $(".time-block").on("click", "div.description", function() {
-    console.log("click");
-    var currentText = $(this)
-      .text()
-      .trim();
-    
-    var currentClass = $(this).attr('class');
-  
-    var textInput = $("<textarea>")
-      .addClass(currentClass)
-      .text(currentText);
-    $(this).replaceWith(textInput);
-  
-    textInput.trigger("focus");
-  });
-  
-  $(".time-block").on("blur", "textarea", function() {
-    console.log("blur")
-    $(this).trigger("focus");
-  });
-
-
 });
-
-
-
-
-
-// var currentText = $(this)
-//   .text()
-//   .trim();
-// var currentClass = $(this).attr('class');
-
-// var textInput = $("<div>")
-//   .addClass(currentClass)
-//   .text(currentText);
-
-// $(this).replaceWith(textInput);
