@@ -39,7 +39,7 @@ class Schedule {
     this.twoPM = new Timeblock(dayjsObj, 14, "two-pm");
     this.threePM = new Timeblock(dayjsObj, 15, "three-pm");
     this.fourPM = new Timeblock(dayjsObj, 16, "four-pm");
-    this.fivePM = new Timeblock(dayjsObj, 17, "five-pm");  
+    this.fivePM = new Timeblock(dayjsObj, 17, "five-pm");
   }
 
   updateStatus() {
@@ -99,27 +99,20 @@ class Timeblock {
       .attr("id", this.id)
       .addClass("row time-block")
       .appendTo("#time-block-container");
-
     // hour element
     $("<div>")
       .addClass("col-2 col-md-1 hour")
       .text(this.name)
       .appendTo(`#${this.id}`);
-
     // description element
     $("<div>")
       .addClass("col-8 col-md-10 description")
-      // .text(this.description)
+      .text(this.loadDescription())
       .appendTo(`#${this.id}`);
-
     // button element
     $("<button>")
       .addClass("col-2 col-md-1 saveBtn bi bi-lock-fill fa-lg")
       .appendTo(`#${this.id}`);
-    
-    // creates jquery obj
-    this.jqueryObj = $(`#${this.id}`)
-
     // update status
     this.updateStatus();
     this.makeClickable();
@@ -131,15 +124,11 @@ class Timeblock {
       var currentText = $(this)
         .text()
         .trim();
-      
       var currentClass = $(this).attr('class');
-      
       var textInput = $("<textarea>")
         .addClass(currentClass)
         .text(currentText);
-      
       $(this).replaceWith(textInput);
-    
       textInput.trigger("focus");
     });
 
@@ -148,13 +137,10 @@ class Timeblock {
       var currentText = $(this)
         .val()
         .trim();
-      
       var currentClass = $(this).attr('class');
-      
       var textInput = $("<div>")
         .addClass(currentClass)
         .text(currentText);
-      
       $(this).replaceWith(textInput);
     });
 
@@ -166,11 +152,21 @@ class Timeblock {
     });
     
     // saves and closes lock icon
-    $(`#${this.id}`).on("click", "button", function() {
+    $(`#${this.id}`).on("click", "button", this, function(event) {
         $(this)
-        .removeClass("bi-unlock-fill")
-        .addClass("bi-lock-fill");
+          .removeClass("bi-unlock-fill")
+          .addClass("bi-lock-fill");
+        event.data.saveDescription();
     });
+  }
+
+  saveDescription() {
+    var currentText = $(`#${this.id} > .description`).text()
+    localStorage.setItem(this.id, JSON.stringify(currentText));
+  }
+
+  loadDescription() {
+    return JSON.parse(localStorage.getItem(this.id));
   }
 };
 
