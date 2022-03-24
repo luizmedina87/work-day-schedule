@@ -14,7 +14,7 @@ https://luizmedina87.github.io/work-day-schedule/
 ## Contribution
 Created and developed by Luiz Medina.
 
-## Screenshots
+## Demo
 
-![alt text](https://github.com/luizmedina87/code-quiz/blob/main/assets/images/ss1.png)
+![alt text](https://github.com/luizmedina87/work-day-schedule/blob/main/assets/gif/work-day-scheduler.gif)
 
